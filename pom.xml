@@ -1,0 +1,317 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.lscc</groupId>
+	<artifactId>cqrs-activerecord</artifactId>
+	<packaging>jar</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>CQRS and ActiveRecord</name>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<compilerVersion>1.6</compilerVersion>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			
+			<!--
+				Here we configure the unit test phase (no integration tests)
+			 -->
+ 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.5</version>
+				<inherited>true</inherited>
+        		<configuration>
+          			<forkMode>once</forkMode>
+					<excludes>
+						<exclude>**/*IntegrationTest.java</exclude>
+						<exclude>**/common/*</exclude>
+					</excludes>
+            	</configuration>
+			</plugin>
+			
+		</plugins>
+	</build>
+	
+		<profiles>
+		<!--
+			Profile for running a build with emma code coverage. Introduces the
+			emma plugin and changes the directory we run our tests from
+		-->
+		<profile>
+			<id>with-emma</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>emma-maven-plugin</artifactId>
+						<inherited>true</inherited>
+						<executions>
+							<execution>
+								<id>instrument</id>
+								<phase>process-test-classes</phase>
+								<configuration>
+									<filters>
+										<filter>+com.example.*</filter>
+										<filter>-*Exception</filter>
+										<filter>-*Aspect</filter>
+									</filters>
+								</configuration>
+								<goals>
+									<goal>instrument</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<!--
+			Use -Pwith-integration-tests to have a jetty server startup before the integration tests run 
+		-->
+		<profile>
+			<id>with-integration-tests</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<forkMode>always</forkMode>
+							<argLine>-javaagent:/Users/sandro.mancuso/.m2/repository/org/springframework/spring-agent/2.5.6/spring-agent-2.5.6.jar</argLine>
+							<!-- 
+							<argline>-javaagent:/Users/sandro.mancuso/.m2/repository/org/springframework/spring-instrument/3.0.5.RELEASE/spring-instrument-3.0.5.RELEASE.jar</argline>
+							 -->
+						</configuration>
+						<version>2.5</version>
+						<inherited>true</inherited>
+						<executions>
+							<execution>
+								<id>integration-tests</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>test</goal>
+								</goals>
+								<configuration>
+									<excludes>
+										<exclude>**/common/*</exclude>
+									</excludes>
+									<includes>
+										<include>**/*IntegrationTest.java</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<repositories>
+		<repository>
+			<id>projectlombok.org</id>
+			<url>http://projectlombok.org/mavenrepo</url>
+		</repository>
+		
+        <repository>
+            <id>r.j.o-groups-public</id>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+        </repository>
+		
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/maven2/</url>        
+        </repository>
+		
+	</repositories>
+
+	<properties>
+		<!-- 
+	    <org.springframework.version>2.5.6</org.springframework.version>
+	    <org.springframework.version>3.0.3.RELEASE</org.springframework.version>
+	    <org.junit.version>4.4</org.junit.version>
+		 -->
+	    <org.springframework.version>3.0.5.RELEASE</org.springframework.version>
+	    <org.hibernate.version>3.5.3-Final</org.hibernate.version>
+	    <org.junit.version>4.8.2</org.junit.version>
+	</properties>
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${org.junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>0.9.3</version>
+			<scope>provided</scope>
+		</dependency>
+		        
+        <!-- MySql -->
+		<dependency>
+		    <groupId>mysql</groupId>
+		    <artifactId>mysql-connector-java</artifactId>
+		    <version>5.1.6</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<!-- HSQLDB -->
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.7</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+ 
+ 		<!-- Hibernate -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>${org.hibernate.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${org.hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>${org.hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <version>3.2.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <version>1.0.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${org.hibernate.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${org.springframework.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${org.springframework.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${org.springframework.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${org.springframework.version}</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${org.springframework.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${org.springframework.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+		      <groupId>org.springframework</groupId>
+		      <artifactId>spring-instrument</artifactId>
+		      <version>${org.springframework.version}</version>
+		      <scope>test</scope>
+		</dependency>
+        <!-- 
+		<dependency>
+		      <groupId>org.springframework</groupId>
+		      <artifactId>spring-agent</artifactId>
+		      <version>2.5.6</version>
+		      <scope>test</scope>
+		</dependency>
+         -->
+		<dependency>
+		      <groupId>org.springframework</groupId>
+		      <artifactId>spring-aspects</artifactId>
+		      <version>${org.springframework.version}</version>
+		      <scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jpa</artifactId>
+            <version>2.0.8</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+		    <groupId>org.aspectj</groupId>
+		    <artifactId>aspectjrt</artifactId>
+		    <version>1.6.9</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.aspectj</groupId>
+		    <artifactId>aspectjweaver</artifactId>
+		    <version>1.6.9</version>
+		</dependency>
+         
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.5.8</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>		
+	</dependencies>
+
+</project>
