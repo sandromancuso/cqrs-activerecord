@@ -2,24 +2,18 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
 
-    <weaver>
+	<weaver>
 
-        <!-- 
-        	only weave classes in our application-specific packages 
-        -->
-        <include within="com.lscc.ddddemo.model.entity.*"/>
-        <include within="com.lscc.ddddemo.model.entity.builder.*"/>
-        
-        <exclude within="*..*CGLIB*" /> 
+		<!-- only weave classes in our application-specific packages -->
+		<include within="com.lscc.ddddemo.model.entity.*" />
+		<include within="com.lscc.ddddemo.model.entity.builder.*" />
 
-    </weaver>
+		<exclude within="*..*CGLIB*" />
 
-    <aspects>
+	</weaver>
 
-        <!-- weave in just this aspect
-        <aspect name="foo.ProfilingAspect"/>
-         -->        
+	<aspects>
+		<!-- weave in just this aspect <aspect name="foo.ProfilingAspect"/> -->
+	</aspects>
 
-    </aspects>
-
-  </aspectj>
+</aspectj>
