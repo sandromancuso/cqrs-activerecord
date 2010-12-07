@@ -3,7 +3,7 @@
     xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
  
-    <persistence-unit name="wwEM">
+    <persistence-unit name="cqrsPU">
         <class>com.lscc.ddddemo.model.entity.TripDiary</class>
         <class>com.lscc.ddddemo.model.entity.DiaryEntry</class>
  
